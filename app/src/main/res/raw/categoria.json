@@ -1,0 +1,22 @@
+[
+  { "name": "Electrónica", "description": "Productos electrónicos como celulares, laptops, cámaras, etc." },
+  { "name": "Ropa y Moda", "description": "Vestimenta para hombres, mujeres, niños y accesorios de moda." },
+  { "name": "Hogar y Cocina", "description": "Artículos para el hogar y la cocina, muebles, y electrodomésticos pequeños." },
+  { "name": "Juguetes y Juegos", "description": "Juguetes para todas las edades, juegos de mesa, y juguetes educativos." },
+  { "name": "Belleza y Cuidado Personal", "description": "Productos de belleza, cuidado de la piel, y artículos de higiene personal." },
+  { "name": "Deportes y Aire Libre", "description": "Equipos deportivos, artículos para el aire libre y ejercicio." },
+  { "name": "Libros", "description": "Libros físicos y electrónicos, novelas, y revistas." },
+  { "name": "Salud y Bienestar", "description": "Productos de salud, suplementos, y artículos de bienestar." },
+  { "name": "Automotriz", "description": "Accesorios y repuestos para vehículos y motocicletas." },
+  { "name": "Mascotas", "description": "Artículos para mascotas como comida, juguetes y accesorios." },
+  { "name": "Joyería", "description": "Relojes, collares, pulseras y demás accesorios de joyería." },
+  { "name": "Herramientas y Mejoras del Hogar", "description": "Herramientas y suministros para proyectos de mejoras del hogar." },
+  { "name": "Alimentos y Bebidas", "description": "Comestibles, snacks, y bebidas." },
+  { "name": "Jardín y Exteriores", "description": "Artículos para el jardín, muebles de exteriores y herramientas." },
+  { "name": "Oficina y Papelería", "description": "Suministros de oficina, artículos de papelería y tecnología para el trabajo." },
+  { "name": "Electrodomésticos", "description": "Electrodomésticos grandes y pequeños para el hogar." },
+  { "name": "Calzado", "description": "Zapatos, sandalias, zapatillas deportivas y calzado de vestir." },
+  { "name": "Arte y Manualidades", "description": "Suministros para arte, manualidades, y hobbies." },
+  { "name": "Accesorios Electrónicos", "description": "Accesorios para teléfonos móviles, tablets y otros dispositivos electrónicos." },
+  { "name": "Viajes y Equipaje", "description": "Maletas, mochilas, y accesorios de viaje." }
+]
