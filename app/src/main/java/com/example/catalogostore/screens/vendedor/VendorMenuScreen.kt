@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun VendorMenuScreen(onAddProductClick: () -> Unit) {
+fun VendorMenuScreen(onAddProductClick: () -> Unit,  onLogout: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -31,6 +31,14 @@ fun VendorMenuScreen(onAddProductClick: () -> Unit) {
             }
 
             //agregar más opciones, como "Ver Productos", "Ver estadistica", etc.
+
+            // Botón de Cerrar sesión
+            Button(
+                onClick = onLogout,  // Al hacer clic, ejecutamos la función de logout
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            ) {
+                Text("Cerrar sesión")
+            }
         }
     }
 }

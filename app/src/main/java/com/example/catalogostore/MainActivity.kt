@@ -51,6 +51,7 @@ fun AppStoreMainScreen() {
     var showVendorMenu by remember { mutableStateOf(false) }
     var showVendorAddProductScreen by remember { mutableStateOf(false) }
     var showProductList by remember { mutableStateOf(false) }
+    var showRegisterRoleSelection by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -80,19 +81,34 @@ fun AppStoreMainScreen() {
                         onAddProductClick = {
                             showVendorMenu = false
                             showVendorAddProductScreen = true
+                        },
+                        onLogout = {
+                            showVendorMenu = false
+                            showLogin = true
                         }
                     )
                 }
                 showVendorAddProductScreen -> {
-                    VendorAddProductScreen(onProductAdded = {
-                        // Acciones después de agregar el producto
-                        showVendorAddProductScreen = false
-                        showVendorMenu = true
-                    })
+                    VendorAddProductScreen(
+                        onProductAdded = {
+                            showVendorAddProductScreen = false
+                            showVendorMenu = true
+                        },
+                        onLogout = {
+                            showVendorAddProductScreen = false
+                            showVendorMenu = true
+                        }
+                    )
                 }
                 showProductList -> {
                     ProductListScreen(onLogout = {
                         showProductList = false
+                        showLogin = true
+                    })
+                }
+                showRegisterRoleSelection -> {
+                    RegisterRoleSelection(onSwitchToLogin = {
+                        showRegisterRoleSelection = false
                         showLogin = true
                     })
                 }

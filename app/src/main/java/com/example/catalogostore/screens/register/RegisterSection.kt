@@ -43,6 +43,13 @@ fun RegisterRoleSelection(onSwitchToLogin: () -> Unit) {
         "Cliente" -> RegisterClientSection(onSwitchToLogin)
         "Vendedor" -> RegisterVendorSection(onSwitchToLogin)
     }
+
+    Button(
+        onClick = { onSwitchToLogin() },
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        Text("Regresar")
+    }
 }
 
 

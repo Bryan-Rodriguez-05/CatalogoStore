@@ -19,7 +19,7 @@ import com.example.catalogostore.config.database.DatabaseHelper
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-fun VendorAddProductScreen(onProductAdded: () -> Unit) {
+fun VendorAddProductScreen(onProductAdded: () -> Unit, onLogout: () -> Unit) {
     val context = LocalContext.current
     val dbHelper = DatabaseHelper(context)
 
@@ -147,6 +147,7 @@ fun VendorAddProductScreen(onProductAdded: () -> Unit) {
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
+            // Botón para cerrar sesión
 
             // Botón para agregar el producto
             Button(
@@ -184,6 +185,11 @@ fun VendorAddProductScreen(onProductAdded: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Agregar Producto")
+
+            }
+
+            Button(onClick = { onLogout() }, modifier = Modifier.padding(16.dp)) {
+                Text(text = "Regresar")
             }
         }
     }

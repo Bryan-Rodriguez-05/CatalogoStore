@@ -2,6 +2,7 @@ package com.example.catalogostore.screens.client
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,6 +23,9 @@ fun ProductListScreen(onLogout: () -> Unit) {
     val dbHelper = DatabaseHelper(context)
     val products = dbHelper.getAllProducts()
 
+    // Estado para controlar la visibilidad del diálogo
+    var showProductDetailsDialog by remember { mutableStateOf(false) }
+    var selectedProduct by remember { mutableStateOf<Product?>(null) }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -35,17 +39,39 @@ fun ProductListScreen(onLogout: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(products) { product ->
-                    ProductItem(product = product, context = context)
+                    ProductItem(
+                        product = product,
+                        context = context,
+                        onProductSelected = {
+                            selectedProduct = it
+                            showProductDetailsDialog = true
+                        }
+                    )
+                }
+            }
+
+            // Si un producto ha sido seleccionado, mostramos los detalles
+            selectedProduct?.let { product ->
+                if(showProductDetailsDialog) {
+                    ProductDetailsDialog(product = product,
+                        onDismiss = { showProductDetailsDialog = false },
+                        onAddToCart = {
+                            showProductDetailsDialog = false
+                        }
+                        )
+                    }
                 }
             }
         }
     }
-}
+
 
 @Composable
-fun ProductItem(product: Product, context: Context) {
+fun ProductItem(product: Product, context: Context, onProductSelected: (Product) -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onProductSelected(product) }, // Al hacer clic, selecciona el producto
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
@@ -81,6 +107,36 @@ fun ProductItem(product: Product, context: Context) {
     }
 }
 
+@Composable
+fun ProductDetailsDialog(
+    product: Product,
+    onDismiss: () -> Unit,
+    onAddToCart: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Detalles del Producto") },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Nombre: ${product.name}")
+                Text("Precio: S/ ${product.price}")
+                Text("Descripción: ${product.description}")
+            }
+        },
+        confirmButton = {
+            Button(onClick = onAddToCart) {
+                Text("Agregar al carrito")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cerrar")
+            }
+        }
+    )
+}
 
 
 // Clase para representar un producto
