@@ -1,5 +1,6 @@
 package com.example.catalogostore.screens.vendedor
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -34,6 +35,17 @@ fun VendorAddProductScreen(onProductAdded: () -> Unit) {
     // Para abrir el selector de imágenes
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         productImageUri = uri
+    }
+
+    // Función para convertir la URI a ByteArray
+    fun uriToByteArray(uri: Uri, context: Context): ByteArray? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            inputStream?.use { it.readBytes() }
+        } catch (e: Exception) {
+            Log.e("VendorAddProductScreen", "Error al convertir URI a ByteArray", e)
+            null
+        }
     }
 
     Surface(
@@ -148,6 +160,9 @@ fun VendorAddProductScreen(onProductAdded: () -> Unit) {
                         val brandId = dbHelper.insertBrand(productBrand)
 
                         if (brandId != -1L) {
+                            // Convertir la URI de la imagen a ByteArray
+                            val imageBytes = productImageUri?.let { uriToByteArray(it, context) }
+
                             val success = dbHelper.insertProduct(
                                 name = productName,
                                 price = price,
@@ -155,7 +170,7 @@ fun VendorAddProductScreen(onProductAdded: () -> Unit) {
                                 stock = stock,
                                 categoryId = categoryId,
                                 brandId = brandId.toInt(),
-                                imageUri = productImageUri.toString()
+                                image = imageBytes  // Aquí pasamos el ByteArray
                             )
 
                             if (success) {

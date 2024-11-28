@@ -43,7 +43,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + COLUMN_PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_PRODUCT_NAME + " TEXT, "
                 + COLUMN_PRODUCT_PRICE + " DOUBLE, "
-                + COLUMN_PRODUCT_IMAGE + " TEXT, "
+                + COLUMN_PRODUCT_IMAGE + " BLOB, "
                 + COLUMN_PRODUCT_DESCRIPTION + " TEXT, "
                 + COLUMN_PRODUCT_STOCK + " INTEGER, "
                 + COLUMN_FOREIGN_CATEGORY_ID + " INTEGER, "
@@ -63,6 +63,54 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + COLUMN_BRAND_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_BRAND_DESCRIPTION + " TEXT)")
 
+        val createOrderDetailTable = ("CREATE TABLE " + TABLE_ORDER_DETAIL + " (" +
+                COLUMN_ORDER_DETAIL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ORDER_DETAIL_UNITS + " INTEGER NOT NULL, " +
+                COLUMN_ORDER_DETAIL_UNIT_COST + " DOUBLE NOT NULL, " +
+                COLUMN_ORDER_DETAIL_DISCOUNT + " DOUBLE NOT NULL, " +
+                COLUMN_ORDER_DETAIL_TOTAL + " DOUBLE NOT NULL, " +
+                COLUMN_FOREIGN_DETAIL_ORDER_ID + " INTEGER NOT NULL, " +
+                COLUMN_FOREIGN_PRODUCT_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_DETAIL_ORDER_ID + ") REFERENCES " + TABLE_ORDERS + "(" + COLUMN_ORDERS_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCT + "(" + COLUMN_PRODUCT_ID + "))")
+
+        val createReturnTable = ("CREATE TABLE " + TABLE_RETURN + " (" +
+                COLUMN_RETURN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_RETURN_QUANTITY + " INTEGER NOT NULL, " +
+                COLUMN_RETURN_REASON + " TEXT NOT NULL, " +
+                COLUMN_RETURN_DATE + " DATE NOT NULL, " +
+                COLUMN_FOREIGN_RETURN_PRODUCT_ID + " INTEGER NOT NULL, " +
+                COLUMN_FOREIGN_RETURN_ORDER_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_RETURN_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCT + "(" + COLUMN_PRODUCT_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_RETURN_ORDER_ID + ") REFERENCES " + TABLE_ORDERS + "(" + COLUMN_ORDERS_ID + "))")
+
+        val createDeliveryTable = ("CREATE TABLE " + TABLE_DELIVERY + " (" +
+                COLUMN_DELIVERY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_DELIVERY_TYPE + " TEXT NOT NULL, " +
+                COLUMN_DELIVERY_DATE + " DATE NOT NULL, " +
+                COLUMN_DELIVERY_STATUS + " TEXT NOT NULL, " +
+                COLUMN_FOREIGN_DELIVERY_ORDER_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_DELIVERY_ORDER_ID + ") REFERENCES " + TABLE_ORDERS + "(" + COLUMN_ORDERS_ID + "))")
+
+        val createOrdersTable = ("CREATE TABLE " + TABLE_ORDERS + " (" +
+                COLUMN_ORDERS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ORDERS_DATE + " DATE NOT NULL, " +
+                COLUMN_ORDERS_STATUS + " TEXT NOT NULL, " +
+                COLUMN_ORDERS_IGV + " DOUBLE NOT NULL, " +
+                COLUMN_ORDERS_SUBTOTAL + " DOUBLE NOT NULL, " +
+                COLUMN_ORDERS_TOTAL + " DOUBLE NOT NULL, " +
+                COLUMN_FOREIGN_ORDERS_CLIENT_ID + " INTEGER NOT NULL, " +
+                COLUMN_FOREIGN_ORDERS_COMPROBANTE_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_ORDERS_CLIENT_ID + ") REFERENCES " + TABLE_CLIENT + "(" + COLUMN_CLIENT_ID + "), " +
+                "FOREIGN KEY(" + COLUMN_FOREIGN_ORDERS_COMPROBANTE_ID + ") REFERENCES " + TABLE_INVOICE + "(" + COLUMN_INVOICE_ID + "))")
+
+        val createInvoiceTypeTable = ("CREATE TABLE " + TABLE_INVOICE + " (" +
+                COLUMN_INVOICE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_INVOICE_DESCRIPTION + " TEXT NOT NULL, " +
+                COLUMN_INVOICE_SERIE + " TEXT NOT NULL, " +
+                COLUMN_INVOICE_CORRELATIVO + " TEXT NOT NULL)")
+
+
         db.execSQL(createPersonTable)
         db.execSQL(createUserTable)
         db.execSQL(createClientTable)
@@ -71,6 +119,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(createProductTable)
         db.execSQL(createInventoryTable)
         db.execSQL(createBrandTable)
+        db.execSQL(createOrdersTable)
+        db.execSQL(createOrderDetailTable)
+        db.execSQL(createReturnTable)
+        db.execSQL(createDeliveryTable)
+        db.execSQL(createInvoiceTypeTable)
 
     }
 
@@ -83,6 +136,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT)
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVENTORY)
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BRAND)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDER_DETAIL)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RETURN)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DELIVERY)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS)
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_INVOICE)
         onCreate(db)
     }
 
@@ -212,7 +270,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Método para insertar un producto
-    fun insertProduct(name: String, price: Double, description: String, stock: Int, categoryId: Int, brandId: Int, imageUri: String?): Boolean {
+    fun insertProduct(name: String, price: Double, description: String, stock: Int, categoryId: Int, brandId: Int, image: ByteArray?): Boolean {
         val db = this.writableDatabase
         val contentValues = ContentValues().apply {
             put(COLUMN_PRODUCT_NAME, name)
@@ -221,7 +279,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             put(COLUMN_PRODUCT_STOCK, stock)
             put(COLUMN_FOREIGN_CATEGORY_ID, categoryId)
             put(COLUMN_FOREIGN_BRAND_ID, brandId)
-            put(COLUMN_PRODUCT_IMAGE, imageUri)
+            put(COLUMN_PRODUCT_IMAGE, image)
         }
         val result = db.insert(TABLE_PRODUCT, null, contentValues)
         return result != -1L
@@ -242,9 +300,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
 
     companion object {
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 6
         private const val DATABASE_NAME = "AppStoreDB.db"
 
+        //Tabla Persona
         private const val TABLE_PERSON = "person"
         private const val COLUMN_DOCUMENT = "document"
         private const val COLUMN_DOCUMENT_TYPE = "document_type"
@@ -253,18 +312,21 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_PHONE = "phone"
         private const val COLUMN_ADDRESS = "address"
 
+        //Tabla Usuario
         private const val TABLE_USER = "user"
         private const val COLUMN_USER_ID = "user_id"
         private const val COLUMN_USERNAME = "username"
         private const val COLUMN_PASSWORD = "password"
 
+        //Tabla cliente
         private const val TABLE_CLIENT = "client"
         private const val COLUMN_CLIENT_ID = "client_id"
 
-
+        //Tabla Vendedor
         private const val TABLE_VENDOR = "vendor"
         private const val COLUMN_VENDOR_ID = "vendor_id"
 
+        //Tabla categoria
         private const val TABLE_CATEGORY = "category"
         private const val COLUMN_CATEGORY_ID = "category_id"
         private const val COLUMN_DESCRIPTION = "description"
@@ -293,5 +355,49 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_BRAND_ID = "marca_id"
         private const val COLUMN_BRAND_DESCRIPTION = "descripcion"
 
+        // Definición de la tabla Detalle_pedido
+        private const val TABLE_ORDER_DETAIL = "order_detail"
+        private const val COLUMN_ORDER_DETAIL_ID = "order_detail_id"
+        private const val COLUMN_ORDER_DETAIL_UNITS = "units"
+        private const val COLUMN_ORDER_DETAIL_UNIT_COST = "unit_cost"
+        private const val COLUMN_ORDER_DETAIL_DISCOUNT = "discount"
+        private const val COLUMN_ORDER_DETAIL_TOTAL = "total"
+        private const val COLUMN_FOREIGN_DETAIL_ORDER_ID = "order_id"
+        private const val COLUMN_FOREIGN_DETAIL_PRODUCT_ID = "product_id"
+
+        // Definición de la tabla Devolucion
+        private const val TABLE_RETURN = "return"
+        private const val COLUMN_RETURN_ID = "return_id"
+        private const val COLUMN_RETURN_QUANTITY = "quantity"
+        private const val COLUMN_RETURN_REASON = "reason"
+        private const val COLUMN_RETURN_DATE = "return_date"
+        private const val COLUMN_FOREIGN_RETURN_PRODUCT_ID = "product_id"
+        private const val COLUMN_FOREIGN_RETURN_ORDER_ID = "order_id"
+
+        // Definición de la tabla Entrega
+        private const val TABLE_DELIVERY = "delivery"
+        private const val COLUMN_DELIVERY_ID = "delivery_id"
+        private const val COLUMN_DELIVERY_TYPE = "delivery_type"
+        private const val COLUMN_DELIVERY_DATE = "delivery_date"
+        private const val COLUMN_DELIVERY_STATUS = "delivery_status"
+        private const val COLUMN_FOREIGN_DELIVERY_ORDER_ID = "order_id"
+
+        // Definición de la tabla Pedido
+        private const val TABLE_ORDERS = "orders"
+        private const val COLUMN_ORDERS_ID = "order_id"
+        private const val COLUMN_ORDERS_DATE = "order_date"
+        private const val COLUMN_ORDERS_STATUS = "order_status"
+        private const val COLUMN_ORDERS_IGV = "igv"
+        private const val COLUMN_ORDERS_SUBTOTAL = "subtotal"
+        private const val COLUMN_ORDERS_TOTAL = "total"
+        private const val COLUMN_FOREIGN_ORDERS_CLIENT_ID = "client_id"
+        private const val COLUMN_FOREIGN_ORDERS_COMPROBANTE_ID = "comprobante_id"
+
+        // Definición de la tabla Tipo_comprobante
+        private const val TABLE_INVOICE = "invoice"
+        private const val COLUMN_INVOICE_ID = "invoice_id"
+        private const val COLUMN_INVOICE_DESCRIPTION = "description"
+        private const val COLUMN_INVOICE_SERIE = "serie"
+        private const val COLUMN_INVOICE_CORRELATIVO = "correlativo"
     }
 }

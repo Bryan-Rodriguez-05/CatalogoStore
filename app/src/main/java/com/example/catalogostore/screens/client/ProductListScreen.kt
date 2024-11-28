@@ -1,5 +1,6 @@
 package com.example.catalogostore.screens.client
 import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
@@ -53,8 +55,9 @@ fun ProductItem(product: Product, context: Context) {
         ) {
             // Mostrar la imagen del producto si está disponible
             product.image?.let {
+                val bitmap = BitmapFactory.decodeByteArray(it, 0, it.size)
                 Image(
-                    painter = rememberAsyncImagePainter(it),
+                    bitmap = bitmap.asImageBitmap(),
                     contentDescription = product.name,
                     modifier = Modifier
                         .height(150.dp)
@@ -71,12 +74,14 @@ fun ProductItem(product: Product, context: Context) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = product.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Precio: S/ \${product.price}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Precio: S/ ${product.price}", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = product.description, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
+
+
 
 // Clase para representar un producto
 data class Product(
@@ -85,7 +90,7 @@ data class Product(
     val price: Double,
     val description: String,
     val stock: Int,
-    val image: String?
+    val image: ByteArray?
 )
 
 // Método para obtener todos los productos
@@ -100,8 +105,8 @@ fun DatabaseHelper.getAllProducts(): List<Product> {
             val price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
             val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
             val stock = cursor.getInt(cursor.getColumnIndexOrThrow("stock"))
-            val image = cursor.getString(cursor.getColumnIndexOrThrow("image"))
-            products.add(Product(id, name, price, description, stock, image))
+            val imageBlob = cursor.getBlob(cursor.getColumnIndexOrThrow("image"))
+            products.add(Product(id, name, price, description, stock, imageBlob))
         } while (cursor.moveToNext())
     }
     cursor.close()
