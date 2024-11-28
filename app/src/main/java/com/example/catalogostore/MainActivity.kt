@@ -43,8 +43,6 @@ class MainActivity : ComponentActivity() {
         categoryManager.insertCategoriesFromJson()
     }
 }
-
-
 @Composable
 fun AppStoreMainScreen() {
     var showLogin by remember { mutableStateOf(true) }
