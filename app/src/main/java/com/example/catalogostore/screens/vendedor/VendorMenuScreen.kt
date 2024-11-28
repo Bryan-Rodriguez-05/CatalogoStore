@@ -1,4 +1,4 @@
-package com.example.catalogostore
+package com.example.catalogostore.screens.vendedor
 
 // VendorMenuScreen.kt
 import androidx.compose.foundation.layout.*

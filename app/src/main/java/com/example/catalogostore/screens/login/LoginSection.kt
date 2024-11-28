@@ -1,4 +1,4 @@
-package com.example.catalogostore
+package com.example.catalogostore.screens.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import com.example.catalogostore.config.database.DatabaseHelper
 
 @Composable
 fun LoginSection(

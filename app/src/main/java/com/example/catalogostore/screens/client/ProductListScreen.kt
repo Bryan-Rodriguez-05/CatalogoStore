@@ -1,4 +1,4 @@
-
+package com.example.catalogostore.screens.client
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -6,21 +6,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import coil.compose.rememberAsyncImagePainter
-import com.example.catalogostore.DatabaseHelper
+import com.example.catalogostore.config.database.DatabaseHelper
 import com.example.catalogostore.R
-import java.io.ByteArrayInputStream
-import android.graphics.BitmapFactory
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.catalogostore.AppStoreMainScreen
-import com.example.catalogostore.ui.theme.CatalogoStoreTheme
 
 @Composable
 fun ProductListScreen(onLogout: () -> Unit) {

@@ -2,6 +2,7 @@ package com.example.catalogostore
 
 import android.content.Context
 import android.util.Log
+import com.example.catalogostore.config.database.DatabaseHelper
 import org.json.JSONArray
 
 class CategoryManager(private val context: Context, private val dbHelper: DatabaseHelper) {

@@ -1,4 +1,4 @@
-package com.example.catalogostore
+package com.example.catalogostore.screens.register
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import com.example.catalogostore.config.database.DatabaseHelper
 
 @Composable
 fun RegisterRoleSelection(onSwitchToLogin: () -> Unit) {

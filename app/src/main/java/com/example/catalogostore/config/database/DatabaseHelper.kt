@@ -1,4 +1,4 @@
-package com.example.catalogostore
+package com.example.catalogostore.config.database
 
 import android.content.ContentValues
 import android.content.Context

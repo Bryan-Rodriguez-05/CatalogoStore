@@ -1,6 +1,5 @@
-package com.example.catalogostore
+package com.example.catalogostore.screens.vendedor
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -15,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.catalogostore.DatabaseHelper
+import com.example.catalogostore.config.database.DatabaseHelper
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
