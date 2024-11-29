@@ -1,11 +1,14 @@
 package com.example.catalogostore.screens.client
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,9 +19,16 @@ import androidx.compose.ui.res.painterResource
 import coil.compose.rememberAsyncImagePainter
 import com.example.catalogostore.config.database.DatabaseHelper
 import com.example.catalogostore.R
+import com.example.catalogostore.screens.ViewModels.CartViewModel
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductListScreen(onLogout: () -> Unit) {
+fun ProductListScreen(
+    onClickCard: () -> Unit,
+    onLogout: () -> Unit,
+    cartViewModel: CartViewModel = CartViewModel() // Obtener el ViewModel
+) {
     val context = LocalContext.current
     val dbHelper = DatabaseHelper(context)
     val products = dbHelper.getAllProducts()
@@ -26,14 +36,31 @@ fun ProductListScreen(onLogout: () -> Unit) {
     // Estado para controlar la visibilidad del diálogo
     var showProductDetailsDialog by remember { mutableStateOf(false) }
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Column {
+            TopAppBar(
+                title = { Text("Productos") },
+                actions = {
+                    // Icono del carrito
+                    IconButton(onClick = {
+                        Log.d("Click,,, :v","onclickcard ....")
+                        onClickCard()
+                    }) {
+                        Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
+                    }
+                }
+            )
+
+            // Botón para cerrar sesión
             Button(onClick = onLogout, modifier = Modifier.padding(16.dp)) {
                 Text(text = "Cerrar sesión")
             }
+
+            // Lista de productos
             LazyColumn(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -45,29 +72,34 @@ fun ProductListScreen(onLogout: () -> Unit) {
                         onProductSelected = {
                             selectedProduct = it
                             showProductDetailsDialog = true
+                        },
+                        onAddToCart = {
+                            // Agregar al carrito
+                            cartViewModel.addToCart(product)
                         }
                     )
                 }
             }
 
-            // Si un producto ha sido seleccionado, mostramos los detalles
+            // Mostrar el diálogo de detalles del producto si se ha seleccionado un producto
             selectedProduct?.let { product ->
-                if(showProductDetailsDialog) {
-                    ProductDetailsDialog(product = product,
+                if (showProductDetailsDialog) {
+                    ProductDetailsDialog(
+                        product = product,
                         onDismiss = { showProductDetailsDialog = false },
                         onAddToCart = {
+                            cartViewModel.addToCart(product)
                             showProductDetailsDialog = false
                         }
-                        )
-                    }
+                    )
                 }
             }
         }
     }
-
+}
 
 @Composable
-fun ProductItem(product: Product, context: Context, onProductSelected: (Product) -> Unit) {
+fun ProductItem(product: Product, context: Context, onProductSelected: (Product) -> Unit,onAddToCart: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,7 +143,7 @@ fun ProductItem(product: Product, context: Context, onProductSelected: (Product)
 fun ProductDetailsDialog(
     product: Product,
     onDismiss: () -> Unit,
-    onAddToCart: () -> Unit
+    onAddToCart: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,

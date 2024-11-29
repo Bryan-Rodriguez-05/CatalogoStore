@@ -19,7 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.catalogostore.config.database.DatabaseHelper
+import com.example.catalogostore.screens.ViewModels.CartViewModel
+import com.example.catalogostore.screens.client.CartScreen
 import com.example.catalogostore.screens.vendedor.VendorAddProductScreen
 import com.example.catalogostore.screens.login.LoginSection
 import com.example.catalogostore.screens.register.RegisterRoleSelection
@@ -49,8 +53,9 @@ fun AppStoreMainScreen() {
     var showVendorMenu by remember { mutableStateOf(false) }
     var showVendorAddProductScreen by remember { mutableStateOf(false) }
     var showProductList by remember { mutableStateOf(false) }
+    var showCardMenu by remember { mutableStateOf(false) }
     var showRegisterRoleSelection by remember { mutableStateOf(false) }
-
+    val cartViewModel: CartViewModel = CartViewModel()// Obtener el ViewModel
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -71,7 +76,8 @@ fun AppStoreMainScreen() {
                         onClientLoginSuccess = {
                             showLogin = false
                             showProductList = true
-                        }
+                        },
+
                     )
                 }
                 showVendorMenu -> {
@@ -83,7 +89,8 @@ fun AppStoreMainScreen() {
                         onLogout = {
                             showVendorMenu = false
                             showLogin = true
-                        }
+                        },
+
                     )
                 }
                 showVendorAddProductScreen -> {
@@ -99,16 +106,28 @@ fun AppStoreMainScreen() {
                     )
                 }
                 showProductList -> {
-                    ProductListScreen(onLogout = {
-                        showProductList = false
-                        showLogin = true
-                    })
+                    ProductListScreen(
+                        onClickCard = {
+                            showCardMenu = true
+                        },
+                        onLogout = {
+                            showProductList = false
+                            showLogin = true
+                        },
+                        cartViewModel = cartViewModel  // Pasar el ViewModel
+                    )
                 }
                 showRegisterRoleSelection -> {
                     RegisterRoleSelection(onSwitchToLogin = {
                         showRegisterRoleSelection = false
                         showLogin = true
                     })
+                }
+                showCardMenu -> {
+                    CartScreen(
+                        cartViewModel = cartViewModel,  // Pasar el ViewModel
+                        onCheckout = { /* Lógica de checkout */ }
+                    )
                 }
                 else -> {
                     RegisterRoleSelection(onSwitchToLogin = { showLogin = true })
