@@ -4,6 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.catalogostore.screens.client.Product
+import java.time.LocalDate
 
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -70,9 +72,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 COLUMN_ORDER_DETAIL_DISCOUNT + " DOUBLE NOT NULL, " +
                 COLUMN_ORDER_DETAIL_TOTAL + " DOUBLE NOT NULL, " +
                 COLUMN_FOREIGN_DETAIL_ORDER_ID + " INTEGER NOT NULL, " +
-                COLUMN_FOREIGN_PRODUCT_ID + " INTEGER NOT NULL, " +
+                COLUMN_FOREIGN_DETAIL_PRODUCT_ID + " INTEGER NOT NULL, " +
                 "FOREIGN KEY(" + COLUMN_FOREIGN_DETAIL_ORDER_ID + ") REFERENCES " + TABLE_ORDERS + "(" + COLUMN_ORDERS_ID + "), " +
-                "FOREIGN KEY(" + COLUMN_FOREIGN_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCT + "(" + COLUMN_PRODUCT_ID + "))")
+                "FOREIGN KEY(" + COLUMN_FOREIGN_DETAIL_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCT + "(" + COLUMN_PRODUCT_ID + "))")
 
         val createReturnTable = ("CREATE TABLE " + TABLE_RETURN + " (" +
                 COLUMN_RETURN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -298,6 +300,80 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return isVendor
     }
 
+    fun getAllProducts(): List<Product> {
+        val db = this.readableDatabase
+        val products = mutableListOf<Product>()
+        val cursor = db.rawQuery("SELECT * FROM product", null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                val price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
+                val stock = cursor.getInt(cursor.getColumnIndexOrThrow("stock"))
+                val imageBlob = cursor.getBlob(cursor.getColumnIndexOrThrow("image"))
+                if (stock > 0) { // Filtramos productos con stock mayor a 0
+                    products.add(Product(id, name, price, description, stock, imageBlob))
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return products
+    }
+
+    private val db: SQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(
+        context.getDatabasePath("mydatabase"), null
+    )
+
+    // Método para insertar un pedido
+    fun insertOrder(clientId: Int, subtotal: Double, igv: Double, total: Double, comprobanteId: Int): Long {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_ORDERS_DATE, getCurrentDate()) // Puedes definir getCurrentDate() para obtener la fecha actual
+            put(COLUMN_ORDERS_STATUS, "PENDING") // Estado por defecto, puede cambiarse si es necesario
+            put(COLUMN_ORDERS_IGV, igv)
+            put(COLUMN_ORDERS_SUBTOTAL, subtotal)
+            put(COLUMN_ORDERS_TOTAL, total)
+            put(COLUMN_FOREIGN_ORDERS_CLIENT_ID, clientId)
+            put(COLUMN_FOREIGN_ORDERS_COMPROBANTE_ID, comprobanteId)
+        }
+
+        // Insertamos el pedido y obtenemos el ID del nuevo pedido
+        val orderId = db.insert(TABLE_ORDERS, null, values)
+        db.close()
+        return orderId
+    }
+
+    fun getCurrentDate(): String {
+        return LocalDate.now().toString()  // Esto devuelve la fecha en formato "YYYY-MM-DD"
+    }
+
+    fun insertOrderDetails(orderId: Long, productId: Int, unitCost: Double, units: Int, discount: Double, total: Double) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_FOREIGN_DETAIL_ORDER_ID, orderId)
+            put(COLUMN_FOREIGN_DETAIL_PRODUCT_ID, productId)
+            put(COLUMN_ORDER_DETAIL_UNITS, units)
+            put(COLUMN_ORDER_DETAIL_UNIT_COST, unitCost)
+            put(COLUMN_ORDER_DETAIL_DISCOUNT, discount)
+            put(COLUMN_ORDER_DETAIL_TOTAL, total)
+        }
+
+        // Insertamos los detalles del pedido
+        db.insert(TABLE_ORDER_DETAIL, null, values)
+        db.close()
+    }
+
+    fun updateProductStock(productId: Int, newStock: Int) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("stock", newStock) // La columna "stock" debería existir en la tabla de productos
+        }
+
+        // Actualizamos el stock del producto
+        db.update(TABLE_PRODUCT, values, "product_id = ?", arrayOf(productId.toString()))
+        db.close()
+    }
 
     companion object {
         private const val DATABASE_VERSION = 6

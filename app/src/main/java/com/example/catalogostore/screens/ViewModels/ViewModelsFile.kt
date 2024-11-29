@@ -17,4 +17,6 @@ class CartViewModel : ViewModel() {
     fun removeFromCart(product: Product) {
         cartItems.remove(product)
     }
+
+
 }

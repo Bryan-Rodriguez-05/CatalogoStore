@@ -10,15 +10,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.catalogostore.config.database.DatabaseHelper
 import com.example.catalogostore.screens.ViewModels.CartViewModel
+import com.example.catalogostore.screens.ViewModels.OrderViewModel
+import com.example.catalogostore.screens.ViewModels.OrderViewModelFactory
+
 
 @Composable
 fun CartScreen(
-    cartViewModel: CartViewModel,  // Usar el ViewModel pasado como parámetro
+    cartViewModel: CartViewModel = viewModel(),
+    orderViewModel: OrderViewModel = viewModel(factory = OrderViewModelFactory(DatabaseHelper(LocalContext.current))), // Proveer el factory con el DatabaseHelper
     onCheckout: () -> Unit
 ) {
+    // Instancia de DatabaseHelper
+    val dbHelper = DatabaseHelper(LocalContext.current)
+
+    // Usar el ViewModelProvider.Factory para crear el OrderViewModel
+    val orderViewModel: OrderViewModel = viewModel(
+        factory = OrderViewModelFactory(dbHelper)
+    )
     val cartItems by remember { derivedStateOf { cartViewModel.cartItems } }
+    val total = cartItems.sumOf { it.price }
     Log.d("cartscreen", "Carrito items: ${cartItems.size}") // Verifica los items del carrito
 
     Surface(
@@ -48,7 +63,11 @@ fun CartScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = onCheckout,
+                    onClick = {
+                        // Crear el pedido al realizar el checkout
+                        orderViewModel.createOrder(clientId = 1, cartItems = cartItems, total = total)  // Supongamos que el clientId es 1
+                        onCheckout()
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Proceder a la compra")
@@ -57,6 +76,8 @@ fun CartScreen(
         }
     }
 }
+
+
 
 @Composable
 fun CartItem(

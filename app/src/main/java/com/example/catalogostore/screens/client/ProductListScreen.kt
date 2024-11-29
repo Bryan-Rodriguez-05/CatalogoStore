@@ -27,13 +27,12 @@ import com.example.catalogostore.screens.ViewModels.CartViewModel
 @Composable
 fun ProductListScreen(
     onClickCard: () -> Unit,
-
     onLogout: () -> Unit,
     cartViewModel: CartViewModel = viewModel() // Obtener el ViewModel
 ) {
     val context = LocalContext.current
     val dbHelper = DatabaseHelper(context)
-    val products = dbHelper.getAllProducts()
+    val products = dbHelper.getAllProducts().filter { it.stock > 0 }
 
     // Estado para controlar la visibilidad del diálogo
     var showProductDetailsDialog by remember { mutableStateOf(false) }
@@ -184,23 +183,5 @@ data class Product(
     val image: ByteArray?
 )
 
-// Método para obtener todos los productos
-fun DatabaseHelper.getAllProducts(): List<Product> {
-    val db = this.readableDatabase
-    val products = mutableListOf<Product>()
-    val cursor = db.rawQuery("SELECT * FROM product", null)
-    if (cursor.moveToFirst()) {
-        do {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-            val price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"))
-            val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
-            val stock = cursor.getInt(cursor.getColumnIndexOrThrow("stock"))
-            val imageBlob = cursor.getBlob(cursor.getColumnIndexOrThrow("image"))
-            products.add(Product(id, name, price, description, stock, imageBlob))
-        } while (cursor.moveToNext())
-    }
-    cursor.close()
-    return products
-}
+
 
