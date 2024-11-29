@@ -1,5 +1,5 @@
 package com.example.catalogostore.ui.components
-
+/*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -36,4 +36,4 @@ fun CustomHeader(iconSize: DpSize = DpSize(200.dp, 200.dp)) {
             modifier = Modifier.size(iconSize)
         )
     }
-}
+}*/

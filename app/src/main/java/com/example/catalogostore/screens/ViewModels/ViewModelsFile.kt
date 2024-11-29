@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.catalogostore.screens.client.Product
 
-class CartViewModel : ViewModel() {
+class CartsViewModel : ViewModel() {
     // Lista de productos en el carrito
     val cartItems = mutableStateListOf<Product>()
 

@@ -1,5 +1,5 @@
 package com.example.catalogostore.ui.components
-
+/*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -116,4 +116,4 @@ fun ImagenButton(
         }
     }
 }
-
+*/

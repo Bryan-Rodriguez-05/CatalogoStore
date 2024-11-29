@@ -1,5 +1,5 @@
 package com.example.catalogostore.ui.components
-
+/*
 import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -120,3 +120,4 @@ fun DateRangePickerComponent(
         )
     }
 }
+*/

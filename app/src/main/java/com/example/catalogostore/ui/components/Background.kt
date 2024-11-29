@@ -1,5 +1,5 @@
 package com.example.catalogostore.ui.components
-
+/*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,4 +15,4 @@ fun Background(){
             .fillMaxSize()
             .background(colorResource(id = R.color.teal_700))
     )
-}
+}*/

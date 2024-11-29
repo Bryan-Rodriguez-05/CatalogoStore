@@ -1,5 +1,5 @@
 package com.example.catalogostore.ui.components
-
+/*
 import android.util.Patterns
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,4 +120,4 @@ fun PasswordTextField(
             }
         }
     )
-}
+}*/
