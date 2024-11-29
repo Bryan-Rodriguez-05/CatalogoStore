@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.catalogostore.config.database.DatabaseHelper
 import com.example.catalogostore.R
@@ -26,8 +27,9 @@ import com.example.catalogostore.screens.ViewModels.CartViewModel
 @Composable
 fun ProductListScreen(
     onClickCard: () -> Unit,
+
     onLogout: () -> Unit,
-    cartViewModel: CartViewModel = CartViewModel() // Obtener el ViewModel
+    cartViewModel: CartViewModel = viewModel() // Obtener el ViewModel
 ) {
     val context = LocalContext.current
     val dbHelper = DatabaseHelper(context)
@@ -47,8 +49,9 @@ fun ProductListScreen(
                 actions = {
                     // Icono del carrito
                     IconButton(onClick = {
-                        Log.d("Click,,, :v","onclickcard ....")
-                        onClickCard()
+                        Log.d("Click,,, :v", "onclickcard ....")
+                        onClickCard()// Aquí cambias el estado
+                        Log.d("showCardMenu", "showCardMenu =OK")  // Log para verificar
                     }) {
                         Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
                     }

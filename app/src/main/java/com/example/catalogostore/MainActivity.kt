@@ -29,6 +29,7 @@ import com.example.catalogostore.screens.login.LoginSection
 import com.example.catalogostore.screens.register.RegisterRoleSelection
 import com.example.catalogostore.screens.vendedor.VendorMenuScreen
 import com.example.catalogostore.ui.theme.CatalogoStoreTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +56,7 @@ fun AppStoreMainScreen() {
     var showProductList by remember { mutableStateOf(false) }
     var showCardMenu by remember { mutableStateOf(false) }
     var showRegisterRoleSelection by remember { mutableStateOf(false) }
-    val cartViewModel: CartViewModel = CartViewModel()// Obtener el ViewModel
+    val cartViewModel: CartViewModel = viewModel() ;// Obtener el ViewModel
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -108,8 +109,8 @@ fun AppStoreMainScreen() {
                 showProductList -> {
                     ProductListScreen(
                         onClickCard = {
-                            showCardMenu = true
-                        },
+                            showProductList = false
+                            showCardMenu = true },
                         onLogout = {
                             showProductList = false
                             showLogin = true
